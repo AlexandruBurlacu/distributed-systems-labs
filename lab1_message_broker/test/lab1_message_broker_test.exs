@@ -1,8 +1,8 @@
-defmodule Lab1MessageBrokerTest do
+defmodule MessageBrokerTest do
   use ExUnit.Case
-  doctest Lab1MessageBroker
+  doctest MessageBroker
 
   test "greets the world" do
-    assert Lab1MessageBroker.hello() == :world
+    assert MessageBroker.hello() == :world
   end
 end

@@ -1,9 +1,9 @@
-defmodule Lab1MessageBroker.MixProject do
+defmodule MessageBroker.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :lab1_message_broker,
+      app: :message_broker,
       version: "0.1.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
@@ -15,7 +15,7 @@ defmodule Lab1MessageBroker.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Lab1MessageBroker.Application, []}
+      mod: {MessageBroker.Application, []}
     ]
   end
 

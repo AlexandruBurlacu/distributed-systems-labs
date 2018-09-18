@@ -1,6 +1,6 @@
-defmodule Lab1MessageBroker do
+defmodule MessageBroker do
   @moduledoc """
-  Documentation for Lab1MessageBroker.
+  Documentation for MessageBroker.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule Lab1MessageBroker do
 
   ## Examples
 
-      iex> Lab1MessageBroker.hello()
+      iex> MessageBroker.hello()
       :world
 
   """
