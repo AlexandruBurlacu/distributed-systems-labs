@@ -5,7 +5,6 @@ defmodule MessageBroker do
 
     @port 60660
     @ip 'localhost'
-    @receivers []
 
     @doc """
         A test method for the MessageLib.Client within MessageBroker
@@ -28,6 +27,8 @@ defmodule MessageBroker do
     def init do
         socket = MessageLib.Client.init @port
 
+        MessageBroker.ReceiversRegistry.start_link
+
         IO.puts "Broker running..."
 
         loop socket
@@ -35,20 +36,19 @@ defmodule MessageBroker do
 
     defp loop(socket) do
         {msg, remote_config} = MessageLib.Client.receive
+        {_, port} = remote_config
+        IO.puts "The Broker received #{msg} from #{port}"
 
-        IO.inspect {"Received", msg, remote_config}
-
-        IO.inspect @receivers
-        IO.inspect remote_config
-        @receivers = [remote_config | @receivers]
-        IO.inspect @receivers
+        current_subscribers = []
 
         if msg == "subscribe" do
-            @receivers = [remote_config | @receivers]
+            current_subscribers = MessageBroker.ReceiversRegistry.add remote_config
+            IO.inspect current_subscribers
+        else
+            current_subscribers
+            |> Enum.each &MessageLib.Client.send(socket, msg, &1)
+            IO.puts "Messages sent to all subscribers"
         end
-
-        @receivers
-        |> Enum.each &MessageLib.Client.send(socket, msg, &1)
 
         loop socket
     end
