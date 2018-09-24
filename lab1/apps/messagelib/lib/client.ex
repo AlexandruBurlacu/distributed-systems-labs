@@ -4,18 +4,20 @@ defmodule MessageLib.Client do
     """
 
     def init(port) do
-        {:ok, sock} = :gen_udp.open port, [:binary, active: true]
-        sock
+        {:ok, socket} = :gen_udp.open port, [:binary, active: true]
+        socket
     end
 
-    def send(sock, msg, {host, port}) do
-        :gen_udp.send sock, host, port, String.to_charlist(msg) |> :erlang.term_to_binary
+    def send(socket, message, {host, port}) do
+        message
+        |> String.to_charlist
+        |> :erlang.term_to_binary
+        |> (fn msg -> :gen_udp.send(socket, host, port, msg) end).()
     end
 
-    def receive(sock) do
+    def receive do
         value = receive do
-            {:udp, socket, host, port, bin} ->
-                # IO.inspect {socket, host, port}
+            {:udp, _socket, host, port, bin} ->
                 ret = :erlang.binary_to_term(bin)
                        |> String.Chars.to_string
 
