@@ -31,7 +31,13 @@ defmodule MessageBroker do
 
         IO.puts "Broker running..."
 
-        loop socket
+        try do
+            loop socket
+        rescue
+            _ in RuntimeError -> 
+                :gen_udp.close socket
+                IO.puts "Restart the service"
+        end
     end
 
     defp loop(socket) do
