@@ -13,7 +13,7 @@ defmodule MessageBroker do
         sock1 = MessageLib.Client.init 12321
         sock2 = MessageLib.Client.init 32123
 
-        MessageLib.Client.send sock1, "My Message", {'localhost', 32123}
+        MessageLib.Client.send sock1, "My Message", {@ip, 32123}
 
         {msg1, config} = MessageLib.Client.receive # sock2
 
@@ -37,15 +37,13 @@ defmodule MessageBroker do
     defp loop(socket) do
         {msg, remote_config} = MessageLib.Client.receive
         {_, port} = remote_config
-        IO.puts "The Broker received #{msg} from #{port}"
-
-        current_subscribers = []
+        IO.puts "The Broker received [#{msg}] from #{port}"
 
         if msg == "subscribe" do
-            current_subscribers = MessageBroker.ReceiversRegistry.add remote_config
-            IO.inspect current_subscribers
+            IO.inspect MessageBroker.ReceiversRegistry.add remote_config
         else
-            current_subscribers
+            MessageBroker.ReceiversRegistry.get
+            |> IO.inspect
             |> Enum.each &MessageLib.Client.send(socket, msg, &1)
             IO.puts "Messages sent to all subscribers"
         end

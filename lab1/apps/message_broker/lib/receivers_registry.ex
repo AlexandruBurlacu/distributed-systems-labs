@@ -5,7 +5,11 @@ defmodule MessageBroker.ReceiversRegistry do
 
     def add(input) do
         Agent.get_and_update(__MODULE__, fn x -> {
-            [x | input], [x | input]
+            [input | x], [input | x]
         } end)
+    end
+
+    def get do
+        Agent.get(__MODULE__, fn x -> x end)
     end
 end
