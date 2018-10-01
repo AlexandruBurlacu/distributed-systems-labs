@@ -1,18 +1,19 @@
 defmodule MessageReceiver do
-  @moduledoc """
-  Documentation for MessageReceiver.
-  """
+  @broker_ip 'localhost'
+  @broker_port 60660
 
-  @doc """
-  Hello world.
+  require Logger
 
-  ## Examples
+  def init(port) do
+    MessageLib.Client.init(port)
+  end
 
-      iex> MessageReceiver.hello()
-      :world
+  def subscribe(socket) do
+    MessageLib.Client.send(socket, "subscribe", {@broker_ip, @broker_port})
+  end
 
-  """
-  def hello do
-    :world
+  def receive do
+    {msg, _} = MessageLib.Client.receive()
+    Logger.info(msg)
   end
 end
