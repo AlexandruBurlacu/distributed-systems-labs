@@ -1,8 +1,6 @@
 defmodule MessageSender do
   @broker_ip 'localhost'
   @broker_port 60660
-  @sender_ip 'localhost'
-  @broker_port 13337
 
   require Logger
 
