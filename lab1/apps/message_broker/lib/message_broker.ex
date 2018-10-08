@@ -18,8 +18,10 @@ defmodule MessageBroker do
     rescue
       _ in RuntimeError ->
         :gen_udp.close(socket)
-        IO.puts("Restart the service")
+        IO.puts("Restarting the service...")
     end
+
+    MessageBroker.init
   end
 
   defp loop(socket) do
@@ -27,14 +29,15 @@ defmodule MessageBroker do
     {_, port} = remote_config
     IO.puts("The Broker received [#{msg}] from #{port}")
 
-    if msg == "subscribe" do
-      IO.inspect(MessageBroker.ReceiversRegistry.add(remote_config))
-    else
-      MessageBroker.ReceiversRegistry.get()
-      |> IO.inspect()
-      |> Enum.each(&MessageLib.Client.send(socket, msg, &1))
+    case msg do
+      "subscribe" -> IO.inspect(MessageBroker.ReceiversRegistry.add(remote_config))
+      "shutdown_broker" -> :gen_udp.close socket
+                           exit 0
+      _ -> MessageBroker.ReceiversRegistry.get
+           |> IO.inspect()
+           |> Enum.each(&MessageLib.Client.send(socket, msg, &1))
 
-      IO.puts("Messages sent to all subscribers")
+           IO.puts("Messages sent to all subscribers")
     end
 
     loop(socket)
