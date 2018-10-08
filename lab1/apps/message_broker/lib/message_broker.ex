@@ -3,6 +3,8 @@ defmodule MessageBroker do
   Documentation for MessageBroker.
   """
 
+  require Logger
+
   @port 60660
   @ip 'localhost'
 
@@ -11,14 +13,14 @@ defmodule MessageBroker do
 
     MessageBroker.ReceiversRegistry.start_link()
 
-    IO.puts("Broker running...")
+    Logger.info "Broker running..."
 
     try do
       loop(socket)
     rescue
       _ in RuntimeError ->
         :gen_udp.close(socket)
-        IO.puts("Restarting the service...")
+        Logger.info "Restarting the service..."
     end
 
     MessageBroker.init
@@ -27,7 +29,7 @@ defmodule MessageBroker do
   defp loop(socket) do
     {msg, remote_config} = MessageLib.Client.receive()
     {_, port} = remote_config
-    IO.puts("The Broker received [#{msg}] from #{port}")
+    Logger.info "The Broker received [#{msg}] from #{port}"
 
     case msg do
       "subscribe" -> IO.inspect(MessageBroker.ReceiversRegistry.add(remote_config))
@@ -37,7 +39,7 @@ defmodule MessageBroker do
            |> IO.inspect()
            |> Enum.each(&MessageLib.Client.send(socket, msg, &1))
 
-           IO.puts("Messages sent to all subscribers")
+           Logger.info "Messages sent to all subscribers"
     end
 
     loop(socket)
