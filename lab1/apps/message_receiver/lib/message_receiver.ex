@@ -27,8 +27,11 @@ defmodule MessageReceiver do
       unsubscribe(socket)
       :gen_udp.close socket
       Logger.info "Done"
+      exit 0
     end
 
     Logger.info(msg)
+
+    MessageReceiver.receive(socket)
   end
 end
