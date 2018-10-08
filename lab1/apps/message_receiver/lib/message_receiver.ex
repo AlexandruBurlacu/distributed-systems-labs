@@ -10,6 +10,7 @@ defmodule MessageReceiver do
 
   def subscribe(socket) do
     MessageLib.Client.send(socket, "subscribe", {@broker_ip, @broker_port})
+    socket
   end
 
   @doc """
@@ -17,6 +18,7 @@ defmodule MessageReceiver do
   """
   def unsubscribe(socket) do
     MessageLib.Client.send(socket, "unsubscribe", {@broker_ip, @broker_port})
+    socket
   end
 
   def receive(socket) do
