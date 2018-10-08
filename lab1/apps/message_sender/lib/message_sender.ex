@@ -6,8 +6,9 @@ defmodule MessageSender do
 
   def init(port) do
     Logger.info "Initializing a connection at port #{port}"
-    MessageLib.Client.init(port)
+    sock = MessageLib.Client.init(port)
     Logger.info "Done"
+    sock
   end
 
   def send(socket, data) do
