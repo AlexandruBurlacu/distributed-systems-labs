@@ -12,8 +12,23 @@ defmodule MessageReceiver do
     MessageLib.Client.send(socket, "subscribe", {@broker_ip, @broker_port})
   end
 
-  def receive do
+  @doc """
+  TODO: Implement unsubscribing on broker side
+  """
+  def unsubscribe(socket) do
+    MessageLib.Client.send(socket, "unsubscribe", {@broker_ip, @broker_port})
+  end
+
+  def receive(socket) do
     {msg, _} = MessageLib.Client.receive()
+
+    if msg == "shutdown_receivers" do
+      Logger.info "Shuting down the receiver..."
+      unsubscribe(socket)
+      :gen_udp.close socket
+      Logger.info "Done"
+    end
+
     Logger.info(msg)
   end
 end
