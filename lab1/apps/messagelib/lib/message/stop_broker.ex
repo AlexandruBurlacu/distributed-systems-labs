@@ -8,7 +8,7 @@ defimpl Serialize.JSON, for: MessageLib.Message.StopBroker do
         "{\"message\": \"shutdown_broker\"}"
     end
 
-    # def deserialize(_msg) do
+    # def deserialize(_str_msg) do
     #     %MessageLib.Message.StopBroker{}
     # end
     

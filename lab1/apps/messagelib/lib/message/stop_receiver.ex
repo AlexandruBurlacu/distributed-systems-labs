@@ -8,7 +8,7 @@ defimpl Serialize.JSON, for: MessageLib.Message.StopReceiver do
         "{\"message\": \"shutdown_receiver\"}"
     end
 
-    # def deserialize(_msg) do
+    # def deserialize(_str_msg) do
     #     %MessageLib.Message.StopReceiver{}
     # end
     

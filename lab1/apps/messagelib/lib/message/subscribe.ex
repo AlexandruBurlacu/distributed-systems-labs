@@ -8,8 +8,9 @@ defimpl Serialize.JSON, for: MessageLib.Message.Subscribe do
         "{\"topic\": \"#{msg.topic}\"}"
     end
 
-    # def deserialize(msg) do
-        
+    # def deserialize(str_msg) do
+    #     parsed_msg = Poison.decode! msg
+    #     %MessageLib.Message.Subscribe{topic: parsed_msg["topic"]}
     # end
     
 end

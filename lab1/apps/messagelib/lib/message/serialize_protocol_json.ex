@@ -8,6 +8,6 @@ defprotocol Serialize.JSON do
     # @doc """
     # Deserializes a message from a JSON string to a struct
     # """
-    # def deserialize(msg)
+    # def deserialize(str_msg)
 
 end
