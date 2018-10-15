@@ -18,8 +18,8 @@ defmodule MessageReceiver do
   @doc """
   TODO: Implement unsubscribing on broker side
   """
-  def unsubscribe(socket) do
-    data = %MessageLib.Message.Unsubscribe{topic: "*"}
+  def unsubscribe(socket, topic) do
+    data = %MessageLib.Message.Unsubscribe{topic: topic}
     json_data = MessageLib.Message.Serialize.JSON.serialize data
     MessageLib.Client.send(socket, json_data, {@broker_ip, @broker_port})
     socket
@@ -33,7 +33,7 @@ defmodule MessageReceiver do
 
       if msg == %MessageLib.Message.StopReceiver{} do
         Logger.info "Shuting down the receiver..."
-        unsubscribe(socket)
+        unsubscribe(socket, msg.topic)
         :gen_udp.close socket
         Logger.info "Done"
         exit 0

@@ -14,13 +14,14 @@ defmodule MessageLib.Message.Deserialize.JSON do
         %MessageLib.Message.StopBroker{}
     end
 
-    defp materialize({:stop_receiver, _msg}) do
-        %MessageLib.Message.StopReceiver{}
+    defp materialize({:stop_receiver, msg}) do
+        %MessageLib.Message.StopReceiver{topic: msg["topic"]}
     end
 
     defp materialize({:message, msg}) do
         {_status, date_time, _} = DateTime.from_iso8601 msg["created_at"]
         %MessageLib.Message.GenericMessage{message: msg["message"],
+                                           topic: msg["topic"],
                                            created_at: date_time}
     end
     
