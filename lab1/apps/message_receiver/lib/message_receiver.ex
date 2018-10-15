@@ -26,20 +26,27 @@ defmodule MessageReceiver do
   end
 
   def receive(socket) do
-    {json_msg, _} = MessageLib.Client.receive()
-    msg = MessageLib.Message.Deserialize.JSON.deserialize json_msg
+    try do
+      {json_msg, _} = MessageLib.Client.receive()
+      msg = MessageLib.Message.Deserialize.JSON.deserialize json_msg
 
 
-    if msg == %MessageLib.Message.StopReceiver{} do
-      Logger.info "Shuting down the receiver..."
-      unsubscribe(socket)
-      :gen_udp.close socket
-      Logger.info "Done"
-      exit 0
+      if msg == %MessageLib.Message.StopReceiver{} do
+        Logger.info "Shuting down the receiver..."
+        unsubscribe(socket)
+        :gen_udp.close socket
+        Logger.info "Done"
+        exit 0
+      end
+
+      Logger.info(json_msg)
+
+      MessageReceiver.receive(socket)
+    rescue
+      _ in RuntimeError ->
+        :gen_udp.close(socket)
+        Logger.info "Shuting down the receiver..."
     end
 
-    Logger.info(json_msg)
-
-    MessageReceiver.receive(socket)
   end
 end
