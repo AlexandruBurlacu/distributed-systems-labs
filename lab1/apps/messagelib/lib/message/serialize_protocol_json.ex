@@ -5,8 +5,9 @@ defprotocol Serialize.JSON do
     """
     def serialize(msg)
 
-    @doc """
-    Deserializes a message from a JSON string to a struct
-    """
-    def deserialize(msg)
+    # @doc """
+    # Deserializes a message from a JSON string to a struct
+    # """
+    # def deserialize(msg)
+
 end

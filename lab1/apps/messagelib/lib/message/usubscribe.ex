@@ -8,8 +8,8 @@ defimpl Serialize.JSON, for: MessageLib.Message.Unsubscribe do
         "{\"topic\": \"#{msg.topic}\"}"
     end
 
-    def deserialize(msg) do
+    # def deserialize(msg) do
         
-    end
+    # end
     
 end

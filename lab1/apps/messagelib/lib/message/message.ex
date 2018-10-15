@@ -9,8 +9,8 @@ defimpl Serialize.JSON, for: MessageLib.Message.GenericMessage do
         "{\"message\": \"#{msg.message}\", \"created_at\": \"#{msg.created_at}\"}"
     end
 
-    def deserialize(msg) do
-        %MessageLib.Message.GenericMessage{message: "", created_at: ""} # DateTime.from_iso8601
-    end
+    # def deserialize(msg) do
+    #     %MessageLib.Message.GenericMessage{message: "", created_at: ""} # DateTime.from_iso8601
+    # end
     
 end
