@@ -27,17 +27,20 @@ defmodule MessageBroker do
   end
 
   defp loop(socket) do
-    {msg, remote_config} = MessageLib.Client.receive()
+    {json_msg, remote_config} = MessageLib.Client.receive()
     {_, port} = remote_config
-    Logger.info "The Broker received [#{msg}] from #{port}"
+    Logger.info "The Broker received [#{json_msg}] from #{port}"
+
+    msg = MessageLib.Message.Deserialize.JSON.deserialize json_msg
 
     case msg do
-      "subscribe" -> IO.inspect(MessageBroker.ReceiversRegistry.add(remote_config))
-      "shutdown_broker" -> :gen_udp.close socket
-                           exit 0
+      %MessageLib.Message.Subscribe{topic: topic_name} -> IO.inspect(MessageBroker.ReceiversRegistry.add(remote_config))
+      %MessageLib.Message.StopBroker{} -> :gen_udp.close socket
+                                         exit 0
       _ -> MessageBroker.ReceiversRegistry.get
            |> IO.inspect()
-           |> Enum.each(&MessageLib.Client.send(socket, msg, &1))
+           |> Enum.each(&MessageLib.Client.send(socket,
+                            MessageLib.Message.Serialize.JSON.serialize(msg), &1))
 
            Logger.info "Messages sent to all subscribers"
     end

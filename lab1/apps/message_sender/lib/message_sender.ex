@@ -13,7 +13,8 @@ defmodule MessageSender do
 
   def send(socket, data) do
     Logger.info "Sending data"
-    MessageLib.Client.send(socket, data, {@broker_ip, @broker_port})
+    json_data = MessageLib.Message.Serialize.JSON.serialize data
+    MessageLib.Client.send(socket, json_data, {@broker_ip, @broker_port})
   end
 
   def close(socket) do
