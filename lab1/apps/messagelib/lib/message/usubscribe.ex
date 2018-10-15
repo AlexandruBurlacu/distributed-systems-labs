@@ -5,7 +5,8 @@ end
 defimpl MessageLib.Message.Serialize.JSON, for: MessageLib.Message.Unsubscribe do
 
     def serialize(msg) do
-        {:unsubscribe, "{\"topic\": \"#{msg.topic}\"}"}
+        payload = "{\"topic\": \"#{msg.topic}\"}"
+        "{\"type\": \"unsubscribe\", \"payload\": #{payload}}"
     end
     
 end

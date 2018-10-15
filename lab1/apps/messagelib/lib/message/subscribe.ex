@@ -5,7 +5,8 @@ end
 defimpl MessageLib.Message.Serialize.JSON, for: MessageLib.Message.Subscribe do
 
     def serialize(msg) do
-        {:subscribe, "{\"topic\": \"#{msg.topic}\"}"}
+        payload = "{\"topic\": \"#{msg.topic}\"}"
+        "{\"type\": \"subscribe\", \"payload\": #{payload}}"
     end
     
 end

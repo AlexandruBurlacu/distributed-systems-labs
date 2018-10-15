@@ -4,29 +4,32 @@ defmodule MessageLib.Message.Deserialize.JSON do
     Deserializes a message from a JSON string to a struct
     """
 
-    def deserialize({:stop_broker, _str_msg}) do
+    def deserialize(str_msg) do
+        parsed_msg = Poison.decode! str_msg
+        {String.to_atom(parsed_msg["type"]), parsed_msg["payload"]}
+        |> materialize
+    end
+
+    defp materialize({:stop_broker, _msg}) do
         %MessageLib.Message.StopBroker{}
     end
 
-    def deserialize({:stop_receiver, _str_msg}) do
+    defp materialize({:stop_receiver, _msg}) do
         %MessageLib.Message.StopReceiver{}
     end
 
-    def deserialize({:message, str_msg}) do
-        parsed_msg = Poison.decode! str_msg
-        {_status, date_time, _} = DateTime.from_iso8601 parsed_msg["created_at"]
-        %MessageLib.Message.GenericMessage{message: parsed_msg["message"],
+    defp materialize({:message, msg}) do
+        {_status, date_time, _} = DateTime.from_iso8601 msg["created_at"]
+        %MessageLib.Message.GenericMessage{message: msg["message"],
                                            created_at: date_time}
     end
     
-    def deserialize({:subscribe, str_msg}) do
-        parsed_msg = Poison.decode! str_msg
-        %MessageLib.Message.Subscribe{topic: parsed_msg["topic"]}
+    defp materialize({:subscribe, msg}) do
+        %MessageLib.Message.Subscribe{topic: msg["topic"]}
     end
 
-    def deserialize({:unsubscribe, str_msg}) do
-        parsed_msg = Poison.decode! str_msg
-        %MessageLib.Message.Unsubscribe{topic: parsed_msg["topic"]}
+    defp materialize({:unsubscribe, msg}) do
+        %MessageLib.Message.Unsubscribe{topic: msg["topic"]}
     end
 
 end

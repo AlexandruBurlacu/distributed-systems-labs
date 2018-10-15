@@ -5,7 +5,8 @@ end
 defimpl MessageLib.Message.Serialize.JSON, for: MessageLib.Message.StopBroker do
 
     def serialize(_msg) do
-        {:stop_broker, "{\"message\": \"shutdown_broker\"}"}
+        payload = "{\"message\": \"shutdown_broker\"}"
+        "{\"type\": \"stop_broker\", \"payload\": #{payload}}"
     end
     
 end

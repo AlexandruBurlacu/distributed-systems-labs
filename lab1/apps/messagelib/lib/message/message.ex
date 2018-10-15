@@ -6,7 +6,8 @@ end
 defimpl MessageLib.Message.Serialize.JSON, for: MessageLib.Message.GenericMessage do
 
     def serialize(msg) do
-        {:message, "{\"message\": \"#{msg.message}\", \"created_at\": \"#{msg.created_at}\"}"}
+        payload = "{\"message\": \"#{msg.message}\", \"created_at\": \"#{msg.created_at}\"}"
+        "{\"type\": \"message\", \"payload\": #{payload}}"
     end
 
 end
