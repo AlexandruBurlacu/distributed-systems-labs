@@ -1,0 +1,35 @@
+version: "3"
+services:
+
+  # Proxy, Reader and Writer services to be added
+
+  # scylladb cluster
+  scylladb1:
+    image: scylladb/scylla
+    restart: always
+    volumes:
+      - ./volumes/db/1:/var/lib/scylla
+    ports:
+      - "9042:9042"
+
+  scylladb2:
+    image: scylladb/scylla
+    restart: always
+    links:
+     - scylladb1:seed
+    volumes:
+      - ./volumes/db/2:/var/lib/scylla
+    ports:
+      - "9142:9042"
+    command: "--seeds scylladb3,scylladb2 --smp 1 --memory 256M"
+
+  scylladb3:
+    image: scylladb/scylla
+    restart: always
+    links:
+     - scylladb1:seed
+    volumes:
+      - ./volumes/db/3:/var/lib/scylla
+    ports:
+      - "9242:9042"
+    command: "--seeds scylladb1,scylladb2 --smp 1 --memory 256M"
