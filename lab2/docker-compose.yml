@@ -2,6 +2,23 @@ version: "3"
 services:
 
   # Proxy, Reader and Writer services to be added
+  readerservice:
+    build:
+      context: ./reader-service
+      dockerfile: Dockerfile
+    ports:
+      - "7071:8080"
+    depends_on:
+      - scylladb1
+
+  writerservice:
+    build:
+      context: ./writer-service
+      dockerfile: Dockerfile
+    ports:
+      - "7072:8080"
+    depends_on:
+      - scylladb1
 
   # scylladb cluster
   scylladb1:

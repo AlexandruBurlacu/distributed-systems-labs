@@ -9,9 +9,6 @@
   [& args]
   (def cluster (alia/cluster {:contact-points ["lab2_scylladb1_1"]}))
   (def session (alia/connect cluster))
-  (alia/execute session "CREATE KEYSPACE alia
-                         WITH replication = {'class': 'SimpleStrategy',
-                                             'replication_factor' : 3};")
   (println "All is done")
   (alia/shutdown session)
   (alia/shutdown cluster)

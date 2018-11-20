@@ -7,4 +7,4 @@ WORKDIR /app
 
 RUN lein deps
 
-CMD ["lein", "run"]
+CMD ["lein", "run", "src/run.clj"]
