@@ -1,10 +1,11 @@
 FROM clojure
 
 RUN mkdir /app
-COPY . /app
-
 WORKDIR /app
 
+COPY project.clj /app
 RUN lein deps
+
+COPY . /app
 
 CMD ["lein", "run", "src/run.clj"]

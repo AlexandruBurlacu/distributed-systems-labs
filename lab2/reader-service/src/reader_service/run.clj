@@ -1,4 +1,9 @@
+(ns reader-service.run
+  (:gen-class))
+
 (use 'ring.adapter.jetty)
 (require '[reader-service.core :as service])
 
-(run-jetty #'service/app {:port 8080})
+(defn -main
+  [& args]
+  (run-jetty #'service/app {:port 8080}))

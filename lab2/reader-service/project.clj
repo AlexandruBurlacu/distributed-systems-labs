@@ -7,9 +7,8 @@
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/core.async "0.4.474"]
                  [cc.qbits/alia "4.3.0"]
-                 [ring/ring-jetty-adapter "0.2.5"]
-                 [ring-json-params "0.1.0"]
-                 [compojure "0.4.0"]
+                 [ring "1.7.1"]
+                 [compojure "1.6.0"]
                  [clj-json "0.2.0"]
                  ]
   :main ^:skip-aot reader-service.core
