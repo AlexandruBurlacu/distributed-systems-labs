@@ -1,18 +1,13 @@
-defmodule ProxyServer do
-  @moduledoc """
-  Documentation for ProxyServer.
-  """
+defmodule ProxyServer.HelloPlug do
+  import Plug.Conn
 
-  @doc """
-  Hello world.
+  require Logger
 
-  ## Examples
+  def init(options), do: options
 
-      iex> ProxyServer.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def call(conn, _opts) do
+    conn
+    |> put_resp_content_type("text/plain")
+    |> send_resp(200, "Hello World!\n")
   end
 end

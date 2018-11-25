@@ -8,12 +8,9 @@ defmodule ProxyServer.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
-      # Starts a worker by calling: ProxyServer.Worker.start_link(arg)
-      # {ProxyServer.Worker, arg},
+      {Plug.Cowboy, scheme: :http, plug: ProxyServer.Router, options: [port: 8080]}
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: ProxyServer.Supervisor]
     Supervisor.start_link(children, opts)
   end
