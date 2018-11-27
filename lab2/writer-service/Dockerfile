@@ -8,4 +8,4 @@ RUN lein deps
 
 COPY . /app
 
-CMD ["lein", "run", "src/core.clj"]
+CMD ["lein", "run"]
