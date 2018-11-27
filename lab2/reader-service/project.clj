@@ -8,9 +8,10 @@
                  [org.clojure/core.async "0.4.474"]
                  [cc.qbits/alia "4.3.0"]
                  [ring "1.7.1"]
+                 [ring-json-params "0.1.3"]
                  [compojure "1.6.0"]
-                 [clj-json "0.2.0"]
+                 [clj-json "0.3.2"]
                  ]
-  :main ^:skip-aot reader-service.core
+  :main ^:skip-aot reader-service.run
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
