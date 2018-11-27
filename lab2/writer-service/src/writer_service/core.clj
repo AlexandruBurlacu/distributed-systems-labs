@@ -1,42 +1,46 @@
 (ns writer-service.core
-  (:gen-class))
+  (:gen-class)
+  (:use compojure.core
+        ring.middleware.json-params)
+  (:require [qbits.alia :as alia]
+            [writer-service.dbutils :as dbutils]
+            [clj-json.core :as json]))
 
-(require '[qbits.alia :as alia])
-(require '[clojure.core.async :as async])
+(defn json-response [data & [status]]
+  {:status (or status 200)
+   :headers {"Content-Type" "application/json"}
+   :body (json/generate-string data)})
 
-(defmulti write-to-db :table)
-;; The `data` should be a dict
-;; with top-level pair :table {:actors, :movies, :studios}
+(defn handler-factory [session]
+  (defroutes handler
+    (POST "/actors" [name gender age]
+      (def actor_id (->> [name (dbutils/female? gender) age]
+                      (dbutils/make-data :actors session)))
+      ;                 (dbutils/write-to-db)))
+      (json-response {"actor_id" actor_id}))
 
-(defmethod write-to-db :actors [data]
-  (def session (:sess data))
-  (def prepared-statement
-    (alia/prepare session "INSERT INTO porndb.actors
-                           (actor_id, name, is_female, age)
-                           VALUES (uuid(), :name, :is_female, :age);"))
-  (alia/execute session prepared-statement {:values (:content data)}))
+    (POST "/studios" [name movies actors]
+      (def studio_id (->> [name movies actors]
+                      (dbutils/make-data :studios session)))
+      ;                 (dbutils/write-to-db)))
+      (json-response {"studio_id" studio_id}))
 
-(defmethod write-to-db :studios [data]
-  (def session (:sess data))
-  (def prepared-statement
-    (alia/prepare session "INSERT INTO porndb.studios
-                           (studio_id, name, movies, actors)
-                           VALUES (uuid(), :name, :movies, :actors);"))
-  (alia/execute session prepared-statement {:values (:content data)}))
+    (POST "/movies" [name link length tags actors studio]
+      (def movie_id (->> [name link length tags actors studio]
+                      (dbutils/make-data :movies session)))
+      ;                 (dbutils/write-to-db)))
+      (json-response {"movie_id" movie_id}))))
 
-(defmethod write-to-db :movies [data]
-  (def session (:sess data))
-  (def prepared-statement
-    (alia/prepare session "INSERT INTO porndb.movies
-                           (movie_id, name, link, length, tags, actors, studio)
-                           VALUES (uuid(), :name, :link, :length, :tags, :actors, :studio);"))
-  (alia/execute session prepared-statement {:values (:content data)}))
+; (def shutdown-cluster
+;   (delay
+;     (do
+;       (alia/shutdown session)
+;       (alia/shutdown cluster))))
 
-(defn -main
-  [& args]
-  (def cluster (alia/cluster {:contact-points ["lab2_scylladb1_1"]}))
+(defn app-factory []
+  (Thread/sleep 3000)
+  (def cluster (alia/cluster {:contact-points ["scylladb1"]}))
   (def session (alia/connect cluster))
-  (println "All is done")
-  (alia/shutdown session)
-  (alia/shutdown cluster)
-  (println "Good bye"))
+  (def app
+    (-> (handler-factory session)
+      wrap-json-params)))

@@ -1,4 +1,6 @@
 (use 'ring.adapter.jetty)
 (require '[writer-service.core :as service])
 
-(run-jetty #'service/app {:port 8080})
+(def app (service/app-factory))
+
+(run-jetty #'app {:port 8080})
