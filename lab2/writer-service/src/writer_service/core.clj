@@ -52,7 +52,7 @@
       wrap-json-params)))
 
 (defn -main [& args]
-  (def cluster (alia/cluster {:contact-points ["scylladb1"]}))
+  (def cluster (alia/cluster {:contact-points ["lab2_scylladb1_1"]}))
   (def session (alia/connect cluster))
   (print "Everything fuckin works now...")
   (alia/shutdown session)

@@ -1,7 +1,7 @@
 version: "3"
 services:
 
-  # Proxy, Reader and Writer services to be added
+  # Proxy service to be added
   readerservice:
     build:
       context: ./reader-service
@@ -10,6 +10,8 @@ services:
       - "7071:8080"
     depends_on:
       - scylladb1
+      - scylladb2
+      - scylladb3
 
   writerservice:
     build:
@@ -19,6 +21,8 @@ services:
       - "7072:8080"
     depends_on:
       - scylladb1
+      - scylladb2
+      - scylladb3
 
   # scylladb cluster
   scylladb1:
@@ -28,6 +32,7 @@ services:
       - ./volumes/db/1:/var/lib/scylla
     ports:
       - "9042:9042"
+    command: "--smp 1 --memory 512M"
 
   scylladb2:
     image: scylladb/scylla
@@ -38,7 +43,7 @@ services:
       - ./volumes/db/2:/var/lib/scylla
     ports:
       - "9142:9042"
-    command: "--seeds scylladb3,scylladb2 --smp 1 --memory 256M"
+    command: "--seeds scylladb3,scylladb2 --smp 1 --memory 512M"
 
   scylladb3:
     image: scylladb/scylla
@@ -49,4 +54,4 @@ services:
       - ./volumes/db/3:/var/lib/scylla
     ports:
       - "9242:9042"
-    command: "--seeds scylladb1,scylladb2 --smp 1 --memory 256M"
+    command: "--seeds scylladb1,scylladb2 --smp 1 --memory 512M"
