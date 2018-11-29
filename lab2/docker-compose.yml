@@ -12,6 +12,7 @@ services:
       - scylladb1
       - scylladb2
       - scylladb3
+    restart: always
 
   writerservice:
     build:
@@ -23,6 +24,7 @@ services:
       - scylladb1
       - scylladb2
       - scylladb3
+    restart: always
 
   # scylladb cluster
   scylladb1:

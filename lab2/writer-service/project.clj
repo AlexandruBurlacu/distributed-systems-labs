@@ -13,6 +13,6 @@
                  [compojure "1.6.0"]
                  [clj-json "0.3.2"]
                  ]
-  :main ^:skip-aot writer-service.core
+  :main ^:skip-aot writer-service.run
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
