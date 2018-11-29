@@ -1,6 +1,6 @@
 # writer-service
 
-FIXME: description
+To get it running, just wait for a couple of minutes for C* to be completely up and running.
 
 ## Installation
 

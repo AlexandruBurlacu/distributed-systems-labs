@@ -7,45 +7,38 @@
             [writer-service.dbutils :as dbutils]
             [clj-json.core :as json]))
 
-(def cluster (alia/cluster {:contact-points ["scylladb1"]}))
-(def session (alia/connect cluster))
+(def cluster (alia/cluster {:contact-points ["scylladb1", "scylladb2", "scylladb3"]}))
 
 (defn json-response [data & [status]]
   {:status (or status 200)
    :headers {"Content-Type" "application/json"}
    :body (json/generate-string data)})
 
-
 (defroutes handler
   (POST "/actors" [name gender age]
-    (log/info [name gender age])
-    (def actor_id (->> [name (dbutils/female? gender) age]
-                    (dbutils/make-data :actors session)))
+    (def session (alia/connect cluster))
+    ; (def actor_id (->> [name (dbutils/female? gender) age]
+    ;                 (dbutils/make-data :actors session)
     ;                 (dbutils/write-to-db)))
-    (log/info actor_id)
+    (alia/shutdown session)
+    (def actor_id 32) ;; temp
     (json-response {"actor_id" actor_id}))
 
   (POST "/studios" [name movies actors]
-    (log/info [name movies actors])
-    (def studio_id (->> [name movies actors]
-                    (dbutils/make-data :studios session)))
-    ;                 (dbutils/write-to-db)))
-    (log/info studio_id)
+    (def session (alia/connect cluster))
+    (def studio_id (or (->> [name movies actors]
+                    (dbutils/make-data :studios session)
+                    (dbutils/write-to-db)) nil))
+    (alia/shutdown session)
     (json-response {"studio_id" studio_id}))
 
   (POST "/movies" [name link length tags actors studio]
-    (log/info [name link length tags actors studio])
-    (def movie_id (->> [name link length tags actors studio]
-                    (dbutils/make-data :movies session)))
-    ;                 (dbutils/write-to-db)))
-    (log/info movie_id)
+    (def session (alia/connect cluster))
+    (def movie_id (or (->> [name link length tags actors studio]
+                    (dbutils/make-data :movies session)
+                    (dbutils/write-to-db)) nil))
+    (alia/shutdown session)
     (json-response {"movie_id" movie_id})))
-
-; (def shutdown-cluster
-;   (delay
-;     (do
-;       (alia/shutdown session)
-;       (alia/shutdown cluster))))
 
 (def app
   (-> handler
