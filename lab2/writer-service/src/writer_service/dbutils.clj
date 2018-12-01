@@ -6,7 +6,7 @@
   (if (= gender "male") false true))
 
 (defn make-data [type session values-dict]
-  ({:type type :sess session :values values-dict}))
+  {:table type :sess session :values values-dict})
 
 (defmulti write-to-db :table)
 ;; The `data` should be a dict
@@ -29,6 +29,14 @@
   (alia/execute session prepared-statement {:values (:content data)}))
 
 (defmethod write-to-db :movies [data]
+  (def session (:sess data))
+  (def prepared-statement
+    (alia/prepare session "INSERT INTO porndb.movies
+                           (movie_id, name, link, length, tags, actors, studio)
+                           VALUES (uuid(), :name, :link, :length, :tags, :actors, :studio);"))
+  (alia/execute session prepared-statement {:values (:content data)}))
+
+(defmethod write-to-db :mock [data]
   (def session (:sess data))
   (def prepared-statement
     (alia/prepare session "INSERT INTO porndb.movies

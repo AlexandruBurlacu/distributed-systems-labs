@@ -17,11 +17,10 @@
 (defroutes handler
   (POST "/actors" [name gender age]
     (def session (alia/connect cluster))
-    ; (def actor_id (->> [name (dbutils/female? gender) age]
-    ;                 (dbutils/make-data :actors session)
-    ;                 (dbutils/write-to-db)))
-    (alia/shutdown session)
-    (def actor_id 32) ;; temp
+    (def actor_id (or (->> [name (dbutils/female? gender) age]
+                  (dbutils/make-data :mock session)
+                  (dbutils/write-to-db) nil))
+    (alia/shutdown session))
     (json-response {"actor_id" actor_id}))
 
   (POST "/studios" [name movies actors]
@@ -43,14 +42,4 @@
 (def app
   (-> handler
     wrap-json-params))
-
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (def cluster (alia/cluster {:contact-points ["lab2_scylladb1_1"]}))
-  (def session (alia/connect cluster))
-  (println "All is done")
-  (alia/shutdown session)
-  (alia/shutdown cluster)
-  (println "Good bye"))
 
