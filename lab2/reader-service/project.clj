@@ -11,6 +11,7 @@
                  [ring "1.7.1"]
                  [ring-json-params "0.1.3"]
                  [compojure "1.6.0"]
+                 [metosin/compojure-api "1.1.11"]
                  [clj-json "0.3.2"]
                  ]
   :main ^:skip-aot reader-service.run

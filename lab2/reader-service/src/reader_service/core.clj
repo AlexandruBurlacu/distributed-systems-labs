@@ -1,6 +1,7 @@
 (ns reader-service.core
   (:use compojure.core)
   (:use ring.middleware.json-params)
+  (:require [compojure.api.sweet :refer :all])
   (:require [clj-json.core :as json]))
 
 (defn json-response [data & [status]]
@@ -9,11 +10,15 @@
    :body (json/generate-string data)})
 
 (defroutes handler
-  (GET "/" []
-    (json-response {"hello" "world"}))
+  (GET "/actors" req ;; {params :params}
+    (json-response {"qs" req}))
 
-  (PUT "/" [name]
-    (json-response {"hello" name})))
+  (GET "/movies" [] :query-params [
+                                {name :- String ""}
+                                {tags :- list []}
+                                {tags :- symbol :small}
+                               ]
+    (json-response {"qs" req})))
 
 (def app
   (-> handler
