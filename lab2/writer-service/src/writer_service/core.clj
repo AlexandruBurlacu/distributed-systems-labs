@@ -17,10 +17,10 @@
 (defroutes handler
   (POST "/actors" [name gender age]
     (def session (alia/connect cluster))
-    (def actor_id (or (->> [name (dbutils/female? gender) age]
-                  (dbutils/make-data :mock session)
-                  (dbutils/write-to-db) nil))
-    (alia/shutdown session))
+    (def actor_id (or (->> [name (dbutils/female? gender) (Integer. age)]
+                  (dbutils/make-data :actors session)
+                  (dbutils/write-to-db)) nil))
+    (alia/shutdown session)
     (json-response {"actor_id" actor_id}))
 
   (POST "/studios" [name movies actors]
