@@ -3,9 +3,10 @@
   (:use compojure.core
         ring.middleware.json-params
         ring.middleware.params)
-  (:require [clj-json.core :as json]))
+  (:require [qbits.alia :as alia]
+            [clj-json.core :as json]))
 
-; (def cluster (alia/cluster {:contact-points ["scylladb1", "scylladb2", "scylladb3"]}))
+(def cluster (alia/cluster {:contact-points ["scylladb1", "scylladb2", "scylladb3"]}))
 
 (defn json-response [data & [status]]
   {:status (or status 200)
@@ -17,25 +18,42 @@
     (let [
       name (get (:query-params req) "name")
     ]
-    (json-response {"qs" name})))
+    (def session (alia/connect cluster))
+    (println name)
+    (def resp
+      (cond
+        (some? name) (do
+                       (def prepared-statement
+                         (alia/prepare session "SELECT * FROM porndb.actors
+                                           WHERE name=? ALLOW FILTERING ;"))
+                       (alia/execute session prepared-statement {:values name}))
+        :else (alia/execute session "SELECT * FROM porndb.actors ;")))
+    (alia/shutdown session)
+    (json-response {"resp" resp})))
 
   (GET "/movies" req
     (let [
       name (get (:query-params req) "name")
-    ]
-    (json-response {"qs" name})))
-    
-  (GET "/movies" req
-    (let [
-      tags (get (:query-params req) "tags")
-    ]
-    (json-response {"qs" tags})))
-    
-  (GET "/movies" req
-    (let [
       length (get (:query-params req) "length")
     ]
-    (json-response {"qs" length}))))
+    (def session (alia/connect cluster))
+    (println name)
+    (println length)
+    (def resp
+      (cond
+        (some? name) (do
+                       (def prepared-statement
+                         (alia/prepare session "SELECT * FROM porndb.movies
+                                                WHERE name=? ALLOW FILTERING ;"))
+                       (alia/execute session prepared-statement {:values name}))
+        (some? length) (do
+                         (def prepared-statement
+                           (alia/prepare session "SELECT * FROM porndb.movies
+                                                  WHERE length=? ALLOW FILTERING ;"))
+                         (alia/execute session prepared-statement {:values length}))
+        :else (alia/execute session "SELECT * FROM porndb.movies ;")))
+    (alia/shutdown session)
+    (json-response {"resp" resp}))))
 
 (def app
   (-> handler
