@@ -11,12 +11,9 @@ defmodule ProxyServer.Router do
     # case HTTPoison.get(query) do
     case HTTPoison.get("http://httparrot.herokuapp.com/get") do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        IO.inspect(body)
+        # IO.inspect(body)
 
-        :ets.insert_new(
-          :user_lookup,
-          {conn.host, conn.method, conn.request_path, conn.query_string}
-        )
+        :ets.insert_new(:user_lookup, {query, body})
 
         send_resp(conn, 200, body)
 
@@ -37,10 +34,7 @@ defmodule ProxyServer.Router do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         IO.inspect(body)
 
-        :ets.insert_new(
-          :user_lookup,
-          {conn.host, conn.method, conn.request_path, conn.query_string}
-        )
+        :ets.insert_new(:user_lookup, {query, body})
 
         send_resp(conn, 200, body)
 
@@ -62,12 +56,6 @@ defmodule ProxyServer.Router do
          ]) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         IO.inspect(body)
-
-        :ets.insert_new(
-          :user_lookup,
-          {conn.host, conn.method, conn.request_path, conn.query_string}
-        )
-
         send_resp(conn, 200, body)
 
       {:error, %HTTPoison.Error{reason: reason}} ->
@@ -85,12 +73,6 @@ defmodule ProxyServer.Router do
          ]) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         IO.inspect(body)
-
-        :ets.insert_new(
-          :user_lookup,
-          {conn.host, conn.method, conn.request_path, conn.query_string}
-        )
-
         send_resp(conn, 200, body)
 
       {:error, %HTTPoison.Error{reason: reason}} ->
