@@ -1,6 +1,16 @@
 version: "3"
 services:
 
+  proxy:
+    build:
+      context: ./proxy_server
+      dockerfile: Dockerfile
+    ports:
+      - "7070:8085"
+    depends_on:
+      - readerservice
+      - writerservice
+
   # Proxy service to be added
   readerservice:
     build:
