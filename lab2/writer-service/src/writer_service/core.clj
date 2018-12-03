@@ -3,7 +3,6 @@
   (:use compojure.core
         ring.middleware.json-params)
   (:require [qbits.alia :as alia]
-            [clojure.tools.logging :as log]
             [writer-service.dbutils :as dbutils]
             [clj-json.core :as json]))
 
