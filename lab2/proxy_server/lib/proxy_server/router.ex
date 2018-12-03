@@ -13,7 +13,7 @@ defmodule ProxyServer.Router do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         # IO.inspect(body)
 
-        :ets.insert_new(:user_lookup, {query, body})
+        :ets.insert(:user_lookup, {query, body})
 
         send_resp(conn, 200, body)
 
@@ -34,7 +34,7 @@ defmodule ProxyServer.Router do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         IO.inspect(body)
 
-        :ets.insert_new(:user_lookup, {query, body})
+        :ets.insert(:user_lookup, {query, body})
 
         send_resp(conn, 200, body)
 
