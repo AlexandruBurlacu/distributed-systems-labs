@@ -4,21 +4,26 @@ defmodule ProxyServer.Router do
   @readerservice_url "readerservice:8080"
   @writerservice_url "writerservice:8080"
 
-  plug :match
-  plug Plug.Parsers, parsers: [:json],
-                     pass:  ["application/json"],
-                     json_decoder: Poison
-  plug :dispatch
+  plug(:match)
+
+  plug(Plug.Parsers,
+    parsers: [:json],
+    pass: ["application/json"],
+    json_decoder: Poison
+  )
+
+  plug(:dispatch)
 
   get "/actors" do
     query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
-    case HTTPoison.get(query) do
+
+    case HTTPoison.get(quer) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         IO.inspect(body)
 
-        :ets.insert(:user_lookup, {query, body})
+        :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
 
         send_resp(conn, 200, body)
 
@@ -34,11 +39,12 @@ defmodule ProxyServer.Router do
     query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
+
     case HTTPoison.get(query) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         IO.inspect(body)
 
-        :ets.insert(:user_lookup, {query, body})
+        :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
 
         send_resp(conn, 200, body)
 
