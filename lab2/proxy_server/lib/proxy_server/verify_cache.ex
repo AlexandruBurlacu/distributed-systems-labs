@@ -7,11 +7,13 @@ defmodule ProxyServer.VerifyCache do
             body
 
           true ->
-            nil
+            IO.inspect("TTL expired.")
+            []
         end
 
-      data ->
-        nil
+      _ ->
+        IO.inspect("No entries.")
+        []
     end
   end
 
