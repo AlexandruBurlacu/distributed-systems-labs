@@ -4,6 +4,29 @@ defmodule ProxyServer.Router do
   @readerservice_url "readerservice:8080"
   @writerservice_url "writerservice:8080"
 
+
+  @doc """
+  TODO: Make the round robin load balancer.
+  As an alternative you can use Agents
+
+  Use in get requests insteat of @readerservice_url
+  """
+  defp get_readerservice_url do
+    get_readerservice_url(:version1)
+  end
+
+  defp get_readerservice_url(:version1) do
+    "readerservice1:8080"
+  end
+
+  defp get_readerservice_url(:version2) do
+    "readerservice2:8080"
+  end
+
+  defp get_readerservice_url(:version3) do
+    "readerservice3:8080"
+  end
+
   plug(:match)
 
   plug(Plug.Parsers,
