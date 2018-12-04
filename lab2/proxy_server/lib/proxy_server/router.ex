@@ -15,23 +15,34 @@ defmodule ProxyServer.Router do
   plug(:dispatch)
 
   get "/actors" do
+    # "http://httparrot.herokuapp.com/get"
     query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
 
-    case HTTPoison.get(quer) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        IO.inspect(body)
+    case ProxyServer.VerifyCache.get(:user_lookup, query, 10) do
+      [] ->
+        IO.inspect("Creating new entry for this query.")
 
-        :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
+        case HTTPoison.get(query) do
+          {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+            IO.inspect(body)
 
-        send_resp(conn, 200, body)
+            :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
 
-      {:ok, %HTTPoison.Response{status_code: 404}} ->
-        send_resp(conn, 404, "Not found.")
+            send_resp(conn, 200, body)
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        IO.inspect(reason)
+          {:ok, %HTTPoison.Response{status_code: 404}} ->
+            send_resp(conn, 404, "Not found.")
+
+          {:error, %HTTPoison.Error{reason: reason}} ->
+            IO.inspect(reason)
+        end
+
+      data ->
+        IO.inspect("Sending data from cache.")
+        IO.inspect(data)
+        send_resp(conn, 200, data)
     end
   end
 
@@ -40,19 +51,29 @@ defmodule ProxyServer.Router do
 
     IO.inspect(query)
 
-    case HTTPoison.get(query) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        IO.inspect(body)
+    case ProxyServer.VerifyCache.get(:user_lookup, query, 10) do
+      [] ->
+        IO.inspect("Creating new entry for this query.")
 
-        :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
+        case HTTPoison.get(query) do
+          {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+            IO.inspect(body)
 
-        send_resp(conn, 200, body)
+            :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
 
-      {:ok, %HTTPoison.Response{status_code: 404}} ->
-        send_resp(conn, 404, "Not found.")
+            send_resp(conn, 200, body)
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        IO.inspect(reason)
+          {:ok, %HTTPoison.Response{status_code: 404}} ->
+            send_resp(conn, 404, "Not found.")
+
+          {:error, %HTTPoison.Error{reason: reason}} ->
+            IO.inspect(reason)
+        end
+
+      data ->
+        IO.inspect("Sending data from cache.")
+        IO.inspect(data)
+        send_resp(conn, 200, data)
     end
   end
 
