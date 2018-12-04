@@ -47,7 +47,11 @@ defmodule ProxyServer.Router do
       [] ->
         IO.inspect("Creating new entry for this query.")
 
-        case HTTPoison.get(query) do
+        resp = HTTPoison.get(query)
+
+        IO.inspect(resp)
+
+        case resp do
           {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
             IO.inspect(body)
 

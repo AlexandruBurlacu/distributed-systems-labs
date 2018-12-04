@@ -19,14 +19,13 @@
       name (get (:query-params req) "name")
     ]
     (def session (alia/connect cluster))
-    (println name)
     (def resp
       (cond
         (some? name) (do
                        (def prepared-statement
                          (alia/prepare session "SELECT * FROM porndb.actors
                                            WHERE name=? ALLOW FILTERING ;"))
-                       (alia/execute session prepared-statement {:values name}))
+                       (alia/execute session prepared-statement {:values [name]}))
         :else (alia/execute session "SELECT * FROM porndb.actors ;")))
     (alia/shutdown session)
     (json-response {"resp" resp})))
@@ -37,20 +36,18 @@
       length (get (:query-params req) "length")
     ]
     (def session (alia/connect cluster))
-    (println name)
-    (println length)
     (def resp
       (cond
         (some? name) (do
                        (def prepared-statement
                          (alia/prepare session "SELECT * FROM porndb.movies
                                                 WHERE name=? ALLOW FILTERING ;"))
-                       (alia/execute session prepared-statement {:values name}))
+                       (alia/execute session prepared-statement {:values [name]}))
         (some? length) (do
                          (def prepared-statement
                            (alia/prepare session "SELECT * FROM porndb.movies
                                                   WHERE length=? ALLOW FILTERING ;"))
-                         (alia/execute session prepared-statement {:values length}))
+                         (alia/execute session prepared-statement {:values [length]}))
         :else (alia/execute session "SELECT * FROM porndb.movies ;")))
     (alia/shutdown session)
     (json-response {"resp" resp}))))
