@@ -11,7 +11,6 @@ services:
       - readerservice
       - writerservice
 
-  # Proxy service to be added
   readerservice:
     build:
       context: ./reader-service
