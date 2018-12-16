@@ -10,8 +10,8 @@ defmodule ProxyServer.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     HTTPoison.start()
+    ProxyServer.LoadBalancer.init
 
-    # ProxyServer.Router.sas()
     :ets.new(:user_lookup, [:set, :public, :named_table])
 
     :ets.new(:cache_table, [:named_table, :public, read_concurrency: true])

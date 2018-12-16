@@ -1,31 +1,7 @@
 defmodule ProxyServer.Router do
   use Plug.Router
 
-  @readerservice_url "readerservice:8080"
   @writerservice_url "writerservice:8080"
-
-
-  @doc """
-  TODO: Make the round robin load balancer.
-  As an alternative you can use Agents
-
-  Use in get requests insteat of @readerservice_url
-  """
-  defp get_readerservice_url do
-    get_readerservice_url(:version1)
-  end
-
-  defp get_readerservice_url(:version1) do
-    "readerservice1:8080"
-  end
-
-  defp get_readerservice_url(:version2) do
-    "readerservice2:8080"
-  end
-
-  defp get_readerservice_url(:version3) do
-    "readerservice3:8080"
-  end
 
   plug(:match)
 
@@ -38,8 +14,8 @@ defmodule ProxyServer.Router do
   plug(:dispatch)
 
   get "/actors" do
-    # "http://httparrot.herokuapp.com/get"
-    query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
+    service_url = ProxyServer.LoadBalancer.get_readerservice_url
+    query = service_url <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
 
@@ -74,7 +50,10 @@ defmodule ProxyServer.Router do
   end
 
   get "/movies" do
-    query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
+    service_url = ProxyServer.LoadBalancer.get_readerservice_url
+    query = service_url
+            <> conn.request_path
+            <> "?" <> conn.query_string
 
     IO.inspect(query)
 
