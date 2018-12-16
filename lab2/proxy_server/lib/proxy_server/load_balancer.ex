@@ -1,9 +1,8 @@
 defmodule ProxyServer.LoadBalancer do
-  # @readerservice_urls ["readerservice1:8080", "readerservice2:8080", "readerservice3:8080"]
-  @readerservice_urls ["readerservice:8080"]
-  @num_of_urls 1
+  @readerservice_urls ["readerservice1:8080", "readerservice2:8080"]
+  @num_of_urls 2
 
-  def init do
+  def start do
     Agent.start_link(fn -> {@readerservice_urls, 0} end, name: :ProxyServerLoadBalancer)
     IO.puts "Load Balancer is up and running..."
   end

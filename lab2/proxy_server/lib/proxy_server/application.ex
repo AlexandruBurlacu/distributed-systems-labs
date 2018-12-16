@@ -8,14 +8,11 @@ defmodule ProxyServer.Application do
   defp cowboy_port, do: Application.get_env(:example, :cowboy_port, 8085)
 
   def start(_type, _args) do
+    HTTPoison.start
+    ProxyServer.LoadBalancer.start
+    ProxyServer.Cache.start
+
     # List all child processes to be supervised
-    HTTPoison.start()
-    ProxyServer.LoadBalancer.init
-
-    :ets.new(:user_lookup, [:set, :public, :named_table])
-
-    :ets.new(:cache_table, [:named_table, :public, read_concurrency: true])
-
     children = [
       {Plug.Cowboy, scheme: :http, plug: ProxyServer.Router, options: [port: cowboy_port()]}
     ]

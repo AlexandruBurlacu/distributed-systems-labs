@@ -17,22 +17,11 @@ defmodule ProxyServer.Router do
     service_url = ProxyServer.LoadBalancer.get_readerservice_url
     query = service_url <> conn.request_path <> "?" <> conn.query_string
 
-    IO.inspect(query)
-
-    case ProxyServer.VerifyCache.get(:user_lookup, query, 10) do
+    case ProxyServer.Cache.get(query, 10) do
       [] ->
-        IO.inspect("Creating new entry for this query.")
-
-        resp = HTTPoison.get(query)
-
-        IO.inspect(resp)
-
-        case resp do
+        case HTTPoison.get(query) do
           {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-            IO.inspect(body)
-
-            :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
-
+            ProxyServer.Cache.put query, body
             send_resp(conn, 200, body)
 
           {:ok, %HTTPoison.Response{status_code: 404}} ->
@@ -44,29 +33,19 @@ defmodule ProxyServer.Router do
 
       data ->
         IO.inspect("Sending data from cache.")
-        IO.inspect(data)
         send_resp(conn, 200, data)
     end
   end
 
   get "/movies" do
     service_url = ProxyServer.LoadBalancer.get_readerservice_url
-    query = service_url
-            <> conn.request_path
-            <> "?" <> conn.query_string
+    query = service_url <> conn.request_path <> "?" <> conn.query_string
 
-    IO.inspect(query)
-
-    case ProxyServer.VerifyCache.get(:user_lookup, query, 10) do
+    case ProxyServer.Cache.get(query, 10) do
       [] ->
-        IO.inspect("Creating new entry for this query.")
-
         case HTTPoison.get(query) do
           {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-            IO.inspect(body)
-
-            :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
-
+            ProxyServer.Cache.put query, body
             send_resp(conn, 200, body)
 
           {:ok, %HTTPoison.Response{status_code: 404}} ->
@@ -78,7 +57,6 @@ defmodule ProxyServer.Router do
 
       data ->
         IO.inspect("Sending data from cache.")
-        IO.inspect(data)
         send_resp(conn, 200, data)
     end
   end
@@ -91,7 +69,6 @@ defmodule ProxyServer.Router do
            {"Content-Type", "application/json"}
          ]) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        IO.inspect(body)
         send_resp(conn, 200, body)
 
       {:error, %HTTPoison.Error{reason: reason}} ->
@@ -107,7 +84,6 @@ defmodule ProxyServer.Router do
            {"Content-Type", "application/json"}
          ]) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        IO.inspect(body)
         send_resp(conn, 200, body)
 
       {:error, %HTTPoison.Error{reason: reason}} ->
@@ -123,8 +99,6 @@ defmodule ProxyServer.Router do
            {"Content-Type", "application/json"}
          ]) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        IO.inspect(body)
-
         send_resp(conn, 200, body)
 
       {:error, %HTTPoison.Error{reason: reason}} ->
