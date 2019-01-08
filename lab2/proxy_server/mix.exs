@@ -28,7 +28,8 @@ defmodule ProxyServer.MixProject do
       {:plug, "~> 1.5"},
       {:poison, "~> 3.1"},
       {:plug_cowboy, "~> 2.0"},
-      {:httpoison, "~> 1.4"}
+      {:httpoison, "~> 1.4"},
+      {:json_to_xml, "~> 0.4.0"}
     ]
   end
 end
