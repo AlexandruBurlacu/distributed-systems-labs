@@ -43,7 +43,18 @@ defmodule ProxyServer.Router do
 
         :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
 
-        send_resp(conn, 200, body)
+        # send_resp(conn, 200, body)
+
+        case List.keyfind(headers, "Accept", 0) do
+          {"Accept", "application/json"} ->
+            send_resp(conn, 200, body)
+
+          {"Accept", "application/xml"} ->
+            send_resp(conn, 200, JsonToXml.convert!(body))
+
+          _ ->
+            "whoops"
+        end
 
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         send_resp(conn, 404, "Not found.")
@@ -62,7 +73,19 @@ defmodule ProxyServer.Router do
       data ->
         IO.inspect("Sending data from cache.")
         IO.inspect(data)
-        send_resp(conn, 200, data)
+
+        # send_resp(conn, 200, data)
+
+        case List.keyfind(headers, "Accept", 0) do
+          {"Accept", "application/json"} ->
+            send_resp(conn, 200, data)
+
+          {"Accept", "application/xml"} ->
+            send_resp(conn, 200, JsonToXml.convert!(data))
+
+          _ ->
+            "whoops"
+        end
     end
   end
 
@@ -82,8 +105,8 @@ defmodule ProxyServer.Router do
   end
 
   get "/actors" do
-    query = "http://httparrot.herokuapp.com/get"
-    # query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
+    # query = "http://httparrot.herokuapp.com/get"
+    query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
     verify_cache(query, conn)
