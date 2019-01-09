@@ -19,19 +19,6 @@ defmodule ProxyServer.Router do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
 
-        # send_resp(conn, 200, body)
-
-        case List.keyfind(conn.req_headers, "Accept", 0) do
-          {"Accept", "application/json"} ->
-            send_resp(conn, 200, body)
-
-          {"Accept", "application/xml"} ->
-            send_resp(conn, 200, JsonToXml.convert!(body))
-
-          _ ->
-            "whoops"
-        end
-
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         send_resp(conn, 404, "Not found.")
 
@@ -41,26 +28,27 @@ defmodule ProxyServer.Router do
   end
 
   defp verify_cache(query, conn) do
-    case ProxyServer.VerifyCache.get(:user_lookup, query, 10) do
-      [] ->
-        IO.inspect("Creating new entry for this query.")
-        get_data(query, conn)
+    body =
+      case ProxyServer.VerifyCache.get(:user_lookup, query, 10) do
+        [] ->
+          IO.inspect("Creating new entry for this query.")
+          get_data(query, conn)
 
-      data ->
-        IO.inspect("Sending data from cache.")
-        IO.inspect(data)
-        # send_resp(conn, 200, data)
+        data ->
+          IO.inspect("Sending data from cache.")
+          IO.inspect(data)
+          # send_resp(conn, 200, data)
+      end
 
-        case List.keyfind(conn.req_headers, "Accept", 0) do
-          {"Accept", "application/json"} ->
-            send_resp(conn, 200, data)
+    case List.keyfind(conn.req_headers, "Accept", 0) do
+      {"Accept", "application/json"} ->
+        send_resp(conn, 200, body)
 
-          {"Accept", "application/xml"} ->
-            send_resp(conn, 200, JsonToXml.convert!(data))
+      {"Accept", "application/xml"} ->
+        send_resp(conn, 200, JsonToXml.convert!(body))
 
-          _ ->
-            "whoops"
-        end
+      _ ->
+        "whoops"
     end
   end
 
