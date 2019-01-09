@@ -28,17 +28,20 @@ defmodule ProxyServer.Router do
   end
 
   defp verify_cache(query, conn) do
-    body =
-      case ProxyServer.VerifyCache.get(:user_lookup, query, 10) do
-        [] ->
-          IO.inspect("Creating new entry for this query.")
-          get_data(query, conn)
+    case ProxyServer.VerifyCache.get(:user_lookup, query, 10) do
+      [] ->
+        IO.inspect("Creating new entry for this query.")
+        get_data(query, conn)
 
-        data ->
-          IO.inspect("Sending data from cache.")
-          IO.inspect(data)
-          # send_resp(conn, 200, data)
-      end
+      data ->
+        IO.inspect("Sending data from cache.")
+        IO.inspect(data)
+        # send_resp(conn, 200, data)
+    end
+  end
+
+  defp return_data(query, conn) do
+    body = verify_cache(query, conn)
 
     case List.keyfind(conn.req_headers, "Accept", 0) do
       {"Accept", "application/json"} ->
@@ -72,14 +75,14 @@ defmodule ProxyServer.Router do
     query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
-    verify_cache(query, conn)
+    return_data(query, conn)
   end
 
   get "/movies" do
     query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
-    verify_cache(query, conn)
+    return_data(query, conn)
   end
 
   post "/actors" do
