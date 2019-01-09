@@ -17,8 +17,6 @@ defmodule ProxyServer.Router do
   defp get_data(query, conn) do
     case HTTPoison.get(query) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body, headers: headers}} ->
-        IO.inspect(headers)
-
         :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
 
         # send_resp(conn, 200, body)
@@ -51,8 +49,18 @@ defmodule ProxyServer.Router do
       data ->
         IO.inspect("Sending data from cache.")
         IO.inspect(data)
+        # send_resp(conn, 200, data)
 
-        send_resp(conn, 200, data)
+        case List.keyfind(conn.req_headers, "Accept", 0) do
+          {"Accept", "application/json"} ->
+            send_resp(conn, 200, data)
+
+          {"Accept", "application/xml"} ->
+            send_resp(conn, 200, JsonToXml.convert!(data))
+
+          _ ->
+            "whoops"
+        end
     end
   end
 
