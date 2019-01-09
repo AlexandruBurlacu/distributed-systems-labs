@@ -16,12 +16,12 @@ defmodule ProxyServer.Router do
 
   defp get_data(query, conn) do
     case HTTPoison.get(query) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body, headers: headers}} ->
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         :ets.insert(:user_lookup, {query, [body, :os.system_time(:seconds)]})
 
         # send_resp(conn, 200, body)
 
-        case List.keyfind(headers, "Accept", 0) do
+        case List.keyfind(conn.req_headers, "Accept", 0) do
           {"Accept", "application/json"} ->
             send_resp(conn, 200, body)
 
