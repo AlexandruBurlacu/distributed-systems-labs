@@ -1,30 +1,7 @@
 defmodule ProxyServer.Router do
   use Plug.Router
 
-  @readerservice_url "readerservice:8080"
   @writerservice_url "writerservice:8080"
-
-  # @doc """
-  # TODO: Make the round robin load balancer.
-  # As an alternative you can use Agents
-
-  # Use in get requests insteat of @readerservice_url
-  # """
-  # defp get_readerservice_url do
-  #   get_readerservice_url(:version1)
-  # end
-
-  # defp get_readerservice_url(:version1) do
-  #   "readerservice1:8080"
-  # end
-
-  # defp get_readerservice_url(:version2) do
-  #   "readerservice2:8080"
-  # end
-
-  # defp get_readerservice_url(:version3) do
-  #   "readerservice3:8080"
-  # end
 
   plug(:match)
 
@@ -74,18 +51,7 @@ defmodule ProxyServer.Router do
         IO.inspect("Sending data from cache.")
         IO.inspect(data)
 
-        # send_resp(conn, 200, data)
-
-        case List.keyfind(headers, "Accept", 0) do
-          {"Accept", "application/json"} ->
-            send_resp(conn, 200, data)
-
-          {"Accept", "application/xml"} ->
-            send_resp(conn, 200, JsonToXml.convert!(data))
-
-          _ ->
-            "whoops"
-        end
+        send_resp(conn, 200, data)
     end
   end
 
@@ -106,14 +72,14 @@ defmodule ProxyServer.Router do
 
   get "/actors" do
     # query = "http://httparrot.herokuapp.com/get"
-    query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
+    query = DomainAgent.get_domain() <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
     verify_cache(query, conn)
   end
 
   get "/movies" do
-    query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
+    query = DomainAgent.get_domain() <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
     verify_cache(query, conn)
