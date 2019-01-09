@@ -43,11 +43,14 @@ defmodule ProxyServer.Router do
   defp return_data(query, conn) do
     body = verify_cache(query, conn)
 
-    case List.keyfind(conn.req_headers, "Accept", 0) do
-      {"Accept", "application/json"} ->
+    IO.inspect("headers")
+    IO.inspect(conn.req_headers)
+
+    case List.keyfind(conn.req_headers, "accept", 0) do
+      {"accept", "application/json"} ->
         send_resp(conn, 200, body)
 
-      {"Accept", "application/xml"} ->
+      {"accept", "application/xml"} ->
         send_resp(conn, 200, JsonToXml.convert!(body))
 
       _ ->
