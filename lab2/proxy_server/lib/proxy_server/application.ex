@@ -15,8 +15,6 @@ defmodule ProxyServer.Application do
 
     :ets.new(:cache_table, [:named_table, :public, read_concurrency: true])
 
-    DomainAgent.start_link()
-
     children = [
       {Plug.Cowboy, scheme: :http, plug: ProxyServer.Router, options: [port: cowboy_port()]}
     ]

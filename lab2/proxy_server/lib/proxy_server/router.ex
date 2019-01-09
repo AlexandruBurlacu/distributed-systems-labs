@@ -1,6 +1,7 @@
 defmodule ProxyServer.Router do
   use Plug.Router
 
+  @readerservice_url "readerservice:8080"
   @writerservice_url "writerservice:8080"
 
   plug(:match)
@@ -72,14 +73,14 @@ defmodule ProxyServer.Router do
 
   get "/actors" do
     # query = "http://httparrot.herokuapp.com/get"
-    query = DomainAgent.get_domain() <> conn.request_path <> "?" <> conn.query_string
+    query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
     verify_cache(query, conn)
   end
 
   get "/movies" do
-    query = DomainAgent.get_domain() <> conn.request_path <> "?" <> conn.query_string
+    query = @readerservice_url <> conn.request_path <> "?" <> conn.query_string
 
     IO.inspect(query)
     verify_cache(query, conn)
