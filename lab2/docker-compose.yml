@@ -8,16 +8,28 @@ services:
     ports:
       - "7070:8085"
     depends_on:
-      - readerservice
+      - readerservice1
+      - readerservice2
       - writerservice
 
-  # Proxy service to be added
-  readerservice:
+  readerservice1:
     build:
       context: ./reader-service
       dockerfile: Dockerfile
     ports:
       - "7071:8080"
+    depends_on:
+      - scylladb1
+      - scylladb2
+      - scylladb3
+    restart: always
+
+  readerservice2:
+    build:
+      context: ./reader-service
+      dockerfile: Dockerfile
+    ports:
+      - "7073:8080"
     depends_on:
       - scylladb1
       - scylladb2

@@ -1,7 +1,6 @@
 defmodule ProxyServer.Router do
   use Plug.Router
 
-  @readerservice_url "readerservice:8080"
   @writerservice_url "writerservice:8080"
 
   plug(:match)
@@ -52,7 +51,7 @@ defmodule ProxyServer.Router do
 
       {"accept", "application/xml"} ->
         send_resp(conn, 200, JsonToXml.convert!(body))
-
+        
       _ ->
         "whoops"
     end
@@ -65,7 +64,6 @@ defmodule ProxyServer.Router do
            {"Content-Type", "application/json"}
          ]) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        IO.inspect(body)
         send_resp(conn, 200, body)
 
       {:error, %HTTPoison.Error{reason: reason}} ->
@@ -90,19 +88,16 @@ defmodule ProxyServer.Router do
 
   post "/actors" do
     query = @writerservice_url <> conn.request_path
-
     post_data(query, conn)
   end
 
   post "/movies" do
     query = @writerservice_url <> conn.request_path
-
     post_data(query, conn)
   end
 
   post "/studio" do
     query = @writerservice_url <> conn.request_path
-
     post_data(query, conn)
   end
 

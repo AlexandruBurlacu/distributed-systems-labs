@@ -13,7 +13,3 @@ Given the above requirments, we are developing:
 
 P.S. The DW will deliver porn-related reports :smile:
 
-# Links
-[rest](https://mmcgrana.github.io/2010/08/clojure-rest-api.html)
-[alia](https://github.com/mpenet/alia)
-[debugging](https://stackoverflow.com/questions/2352020/debugging-in-clojure)
